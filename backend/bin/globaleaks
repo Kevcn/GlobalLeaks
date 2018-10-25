@@ -1,0 +1,174 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from __future__ import print_function
+
+import os
+import platform
+import sys
+import mimetypes
+
+# Use UTF-8 for all string to unicode conversions
+if sys.version[0] == '2':
+    reload(sys)
+    sys.setdefaultencoding('utf8')
+
+# Avoid writing bytecode files at runtime
+sys.dont_write_bytecode = True
+
+this_directory = os.path.dirname(__file__)
+root = os.path.abspath(os.path.join(this_directory, '..'))
+sys.path.insert(0, root)
+
+distro='unknown'
+if platform.system() == 'Linux':
+    distro = platform.linux_distribution()[2]
+
+    if distro != 'bionic':
+        print("WARNING: The long term supported platform is Ubuntu Bionic (18.04)")
+        print("WARNING: It is recommended to use only this platform to ensure stability and security")
+        print("WARNING: Read about Technical Requirements at: https://docs.globaleaks.org/en/latest/TechnicalRequirements.html")
+        print("WARNING: If it's an old Ubuntu, read more about updating at: https://docs.globaleaks.org/en/latest/UpgradeGuide.html")
+
+elif platform.system() == 'Windows':
+    print("WARNING: Windows support is extremely experimental at this time, and should not be used for production environments")
+
+from twisted.python import usage
+
+# Win32 can't use the standard _twistd_unix, but provides it's own variant
+if platform.system() == 'Windows':
+    from twisted.scripts._twistw import ServerOptions
+    from twisted.scripts._twistw import WindowsApplicationRunner as TwistedApplicationRunner
+else:
+    from twisted.scripts._twistd_unix import ServerOptions
+    from twisted.scripts._twistd_unix import UnixApplicationRunner as TwistedApplicationRunner
+
+
+from globaleaks import DATABASE_VERSION
+from globaleaks.settings import Settings
+from globaleaks.state import State, mail_exception_handler
+
+Settings.parser.add_option("-n", "--nodaemon", action='store_true',
+    help="don't daemonize",
+    dest="nodaemon", default=False)
+
+Settings.parser.add_option("-l", "--loglevel", type="choice",
+    choices=['CRITICAL', 'ERROR', 'INFO', 'DEBUG'],
+    help="set log level [default: %default]",
+    dest="loglevel", default="INFO")
+
+Settings.parser.add_option("-i", "--ip", type="string",
+    help="IP address used for listening [default: %default]",
+    dest="ip", default=Settings.bind_address)
+
+Settings.parser.add_option("-s", "--socks-host", type="string",
+    help="set Socks host to use for Tor [default: %default]",
+    dest="socks_host", default=Settings.socks_host)
+
+Settings.parser.add_option("-r", "--socks-port", type="int",
+    help="set Socks port to use for Tor [default: %default]",
+    dest="socks_port", default=Settings.socks_port)
+
+Settings.parser.add_option("-u", "--user", type="string",
+    help="set the user to run as [default: current_user]",
+    dest="user", default=None)
+
+Settings.parser.add_option("-g", "--group", type="string",
+    help="set the group to run as [default: current_user]",
+    dest="group", default=None)
+
+Settings.parser.add_option("-w", "--working-path", type="string",
+    help="set the backend working directory",
+    dest="working_path", default=None)
+
+Settings.parser.add_option("-k", "--kill", type="int",
+    help="signal to send to the current globaleaks process (if exists)",
+    dest="kill", default=0)
+
+Settings.parser.add_option("-A", "--api-prefix", type='string',
+    help="specify an API prefix",
+    dest="api_prefix", default='')
+
+Settings.parser.add_option("-C", "--client-path", type='string',
+    help="specify client path",
+    dest="client_path", default=None)
+
+Settings.parser.add_option("-P", "--disable-swap", action='store_true',
+    help="disable process swap [default: False]",
+    dest="disable_swap", default=False)
+
+Settings.parser.add_option("-z", "--devel-mode", action='store_true',
+    help="set development mode [default: False]",
+    dest="devel_mode", default=False)
+
+Settings.parser.add_option("-o", "--orm-debug", action='store_true',
+    help="enable ORM debugging [default: False]",
+    dest="orm_debug", default=False)
+
+Settings.parser.add_option("-v", "--version", action='store_true',
+    help="show the version of the software")
+
+
+# here the options are parsed, because sys.argv array is whack below
+(Settings.cmdline_options, args) = Settings.parser.parse_args()
+
+if Settings.cmdline_options.version:
+    print("GlobaLeaks version:", Settings.version_string)
+    print("Database version:", DATABASE_VERSION)
+    sys.exit(53)
+
+Settings.load_cmdline_options()
+
+if Settings.cmdline_options.kill:
+    try:
+        with open(Settings.pidfile_path, "r") as fd:
+            target_pid = int(fd.read())
+        os.kill(target_pid, Settings.cmdline_options.kill)
+        os.remove(Settings.pidfile_path)
+    except Exception as excep:
+        print("Unable kill PID found in %s: kill option ignored (%s)" % (Settings.pidfile_path, excep))
+
+State.init_environment()
+
+# Mimetypes initialization
+if platform.system() == 'Windows':
+    # this is an ugly ugly hack.
+    #
+    # Essentially, on Windows, mimetypes does not load from a well known
+    # source, *or* the python hardcoded database. Instead it queries the
+    # Windows registry and uses that. That would be dandy but the Windows
+    # registry MIGHT not have things like .js/.css (my laptop didn't), so
+    # this forces the mimetypes module to ignore the registry and load the
+    # Python hardcoded list. It MIGHT be better that we just ship mime.types
+    # ourselves and load it, but this is enough to get us started
+    print("WARNING: Overriding MIMETypes for Windows")
+    mimetypes.init([])
+
+args = ['-y', Settings.backend_script]
+if Settings.nodaemon:
+    args += ['-n']
+
+# PIDFile only supported on UNIX
+if platform.system() != 'Windows':
+    args +=['--pidfile', Settings.pidfile_path]
+
+sys.argv[1:] = args
+
+def run_backend():
+    sys.excepthook = mail_exception_handler
+    config = ServerOptions()
+    try:
+        config.parseOptions()
+    except usage.error as ue:
+        print("%s: %s" % (sys.argv[0], ue))
+        sys.exit(50)
+    try:
+        # This blocks until the app exits
+        TwistedApplicationRunner(config).run()
+        print("Exiting GlobaLeaks")
+    except Exception as excep:
+        print("Unable to start GlobaLeaks: %s" % excep)
+        sys.exit(51)
+
+# "Now his watch begins"
+run_backend()
+# "Now his watch ends"

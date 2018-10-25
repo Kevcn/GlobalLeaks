@@ -1,0 +1,91 @@
+<div id="SubstatusEditBox">
+  <div class="editorTitle row">
+    <span class="col-md-8">
+      <span data-translate>Substatuses</span>
+      <button class="btn btn-xs btn-primary" data-ng-click="toggleAddSubstatus()">
+        <i class="glyphicon glyphicon-plus"></i>
+        <span data-translate>Add</span>
+      </button>
+    </span>
+  </div>
+  <div id="SubstatusAddBox" data-ng-controller="AdminSubmissionSubStatusAddCtrl" class="row" data-ng-if="showAddSubstatus">
+    <div class="col-md-6">
+      <div data-ng-form="newSubstatus">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label data-translate>Label</label>
+              <input name="label" class="form-control" data-ng-model="new_substatus.label" type="text" required>
+              <div class="text-danger" data-ng-show="newSubstatus.label.$error.required">
+                <span data-translate>This field is mandatory</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <button class="pull-left btn btn-primary" data-ng-disabled="newSubstatus.$invalid"
+                      data-ng-click="addSubmissionSubStatus(); toggleAddSubstatus()">
+                <i class="glyphicon glyphicon-plus-sign"></i>
+                <span data-translate>Add</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div data-ng-repeat="substatus in submissions_status.substatuses">
+      <div class="col-md-12" data-ng-controller="AdminSubmissionSubStatusEditorCtrl">
+        <div class="configItem">
+          <div class="editorHeader row" data-ng-click="toggleSubstatusEditing(); $event.stopPropagation();">
+            <span class="col-md-7">
+              <span class="substatusLabel">{{substatus.label}}</span>
+            </span>
+            <span class="col-md-5">
+              <span class="pull-right">
+                <button data-ng-if="!$first" class="btn btn-xs btn-primary" data-ng-click="moveSsUp($event, $index)" uib-popover="{{'Move up' | translate}}" popover-placement="left">
+                  <i class="glyphicon glyphicon-menu-up"></i>
+                </button>
+                <button data-ng-if="!$last" class="btn btn-xs btn-primary" data-ng-click="moveSsDown($event, $index)" uib-popover="{{'Move down' | translate}}" popover-placement="left">
+                  <i class="glyphicon glyphicon-menu-down"></i>
+                </button>
+                <button class="btn btn-xs btn-default" data-ng-show="!substatus_editing"
+                        data-ng-click="toggleSubstatusEditing(); $event.stopPropagation();">
+                  <span data-translate>Edit</span>
+                </button>
+                <button class="btn btn-xs btn-success" data-ng-show="substatus_editing"
+                        data-ng-click="save_submissions_substatuses(substatus);">
+                  <span data-translate>Save</span>
+                </button>
+                <button class="btn btn-xs btn-default" data-ng-show="substatus_editing"
+                        data-ng-click="toggleSubstatusEditing(); $event.stopPropagation();">
+                  <span data-translate>Cancel</span>
+                </button>
+                <button class="btn btn-xs btn-danger"
+                        data-ng-click="deleteSubSubmissionStatus(substatus); $event.stopPropagation();"
+                        uib-popover="{{Delete | translate}}"
+                        popover-placement="right">
+                  <span data-translate>Delete</span>
+                </button>
+              </span>
+            </span>
+          </div>
+          <div data-ng-form="editStep" data-ng-if="substatus_editing">
+            <hr/>
+            <div class="row">
+              <div class="form-group">
+                <div class="col-md-6">
+                  <label data-translate>Label</label>
+                  <input class="form-control" data-ng-model="substatus.label" type="text" required/>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,103 @@
+.adminConfigSection {
+  margin-bottom: 25px;
+}
+
+.configItem {
+  background-color: #FCFCFC;
+  box-shadow: 2px 1px 5px #888888;
+  border: 1px solid #CCC;
+  border-radius: 3px;
+  padding: 16px;
+  margin-top: 1em;
+  margin-bottom: 0.2em;
+}
+
+#StepAddBox, #StepsEditBox, #FieldsEditBox, #ContextAdvancedSettingsBox, #SubstateEditBox {
+  margin-top: 30px;
+}
+
+.addField, .addFieldFromTemplate {
+  clear: both;
+  margin-bottom: 0.8em;
+}
+
+.fileDetails {
+  margin: 0 0 0.8em 20px;
+}
+
+.field {
+  position: relative;
+  border: 1px solid rgb(204, 204, 204);
+  margin-bottom: 20px;
+}
+
+.editorHeader {
+  background-color: rgb(252, 252, 252);
+}
+
+.editorHeaderTitle {
+  letter-spacing: -1px;
+  line-height: 1;
+  display: block;
+}
+
+.editorHeaderTitle {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.editorTitle {
+  font-size: 18px;
+}
+
+.fieldOption {
+  margin-bottom: 0.8em;
+}
+
+.selectionList {
+  background-color: #fff;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  border: 1px solid #cccccc;
+}
+
+.selectionContextItem .checkbox {
+  display: inline;
+  top: 0;
+  position: absolute;
+  left: -40px;
+}
+
+text.axis-workweek {
+  fill: #000;
+}
+
+text.axis-worktime {
+  fill: #000;
+}
+
+.license, .changelogmsg {
+  white-space: pre-line;
+  width: 87ch;
+}
+
+#wizardLicense {
+  max-height: 400px;
+  overflow-y: scroll;
+}
+
+.default-language, .non-default-language {
+  color: #337ab7;
+}
+
+.non-default-language, .disabled-icon {
+  opacity: 0.2;
+}
+
+.non-default-language:hover {
+  opacity: 1;
+}
+
+.selectionList {
+  list-style-type: none;
+}

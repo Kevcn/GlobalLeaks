@@ -1,0 +1,139 @@
+<div id="StepsEditBox">
+  <div class="editorTitle row">
+    <span class="col-md-8">
+      <span data-translate>Steps</span>
+      <button class="btn btn-xs btn-primary show-add-step-btn" data-ng-click="toggleAddStep()">
+        <i class="glyphicon glyphicon-plus"></i>
+        <span data-translate>Add</span>
+      </button>
+    </span>
+  </div>
+  <div id="StepAddBox" data-ng-controller="AdminStepAddCtrl" class="row" data-ng-if="showAddStep">
+    <div class="col-md-6">
+      <div data-ng-form="newStep">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label data-translate>Label</label>
+              <input name="label" class="form-control" data-ng-model="new_step.label" type="text" required>
+              <div class="text-danger" data-ng-show="newStep.label.$error.required">
+                <span data-translate>This field is mandatory</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <button id="add-step-btn" class="pull-left btn btn-primary" data-ng-disabled="newStep.$invalid" data-ng-click="add_step(); toggleAddStep()">
+                <i class="glyphicon glyphicon-plus-sign"></i>
+                <span data-translate>Add</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div data-ng-repeat="step in questionnaire.steps">
+      <div class="col-md-12"
+           data-ng-controller="AdminStepEditorCtrl">
+        <div class="configItem">
+          <div class="editorHeader row" data-ng-click="toggleEditing(); $event.stopPropagation();">
+            <span class="col-md-7">
+              <span class="stepIndex badge">{{$index + 1}}</span>
+              <span class="stepLabel">{{step.label}}</span>
+            </span>
+            <span class="col-md-5">
+              <span class="pull-right">
+                <button data-ng-show="!$first" class="actionButton btn btn-xs btn-primary" data-ng-click="moveUp($event, $index)" uib-popover="{{'Move up' | translate}}" popover-placement="left">
+                  <i class="glyphicon glyphicon-menu-up"></i>
+                </button>
+                <button data-ng-show="!$last" class="actionButton btn btn-xs btn-primary" data-ng-click="moveDown($event, $index)" uib-popover="{{'Move down' | translate}}" popover-placement="left">
+                  <i class="glyphicon glyphicon-menu-down"></i>
+                </button>
+                <button
+                  class="btn btn-xs btn-default"
+                  data-ng-show="!editing"
+                  data-ng-click="toggleEditing(); $event.stopPropagation();">
+                  <span data-translate>Edit</span>
+                </button>
+                <button
+                  class="btn btn-xs btn-success"
+                  data-ng-show="editing"
+                  data-ng-click="save_step(step);">
+                  <span data-translate>Save</span>
+                </button>
+                <button
+                  class="btn btn-xs btn-default"
+                  data-ng-show="editing"
+                  data-ng-click="toggleEditing(); $event.stopPropagation();">
+                  <span data-translate>Cancel</span>
+                </button>
+                <button
+                  class="btn btn-xs btn-danger"
+                  data-ng-click="delStep(step); $event.stopPropagation();"
+                  uib-popover="{{Delete | translate}}"
+                  popover-placement="right">
+                  <span data-translate>Delete</span>
+                </button>
+              </span>
+            </span>
+          </div>
+          <div data-ng-form="editStep" data-ng-if="editing">
+            <hr />
+            <div class="row">
+              <div class="form-group">
+                <div class="col-md-6">
+                  <label data-translate>Label</label>
+                  <input class="form-control" data-ng-model="step.label" type="text" required />
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-md-6">
+                <label data-translate>Description</label>
+                <div>
+                  <textarea class="form-control" data-ng-model="step.description"></textarea>
+                </div>
+              </div>
+            </div>
+            <div id="FieldsEditBox" class="form-group">
+              <div class="row">
+                <span class="col-md-12">
+                  <label>
+                    <span data-translate>Questions</span>
+                    <button class="btn btn-xs btn-primary show-add-question-btn" data-ng-click="toggleAddQuestion()">
+                      <i class="glyphicon glyphicon-plus"></i>
+                      <span data-translate>Add new question</span>
+                    </button>
+                    <button class="btn btn-xs btn-primary show-add-question-from-template-btn" data-ng-click="toggleAddQuestionFromTemplate()" data-ng-if="admin.fieldtemplates.length > 0">
+                      <i class="glyphicon glyphicon-plus"></i>
+                      <span data-translate>Add question from template</span>
+                    </button>
+                  </label>
+                </span>
+              </div>
+              <div class="row adminConfigSection" data-ng-if="showAddQuestion">
+                <div class="col-md-6">
+                  <div data-ng-include="'views/admin/questionnaires/add_field.html'"></div>
+                </div>
+              </div>
+              <div class="row adminConfigSection" data-ng-if="showAddQuestionFromTemplate">
+                <div class="col-md-6">
+                  <div data-ng-include="'views/admin/questionnaires/add_field_from_template.html'"></div>
+                </div>
+              </div>
+              <div class="row configuredFields">
+                <div class="col-md-12" data-ng-repeat="field in step.children | orderBy:['y', 'x']">
+                  <div data-ng-include="'views/admin/questionnaires/fields.html'"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,46 @@
+#HomePageBox {
+  text-align: center;
+  color: #5a5a5a;
+  font-size: 1em;
+  margin: 0 auto;
+}
+
+#NodeIntro, #WhistleblowerSubmitBox, #WhistleblowerReceiptBox {
+  font-size: 1.2em;
+}
+
+#NodeIntro {
+  margin-bottom: 3em;
+}
+
+#WhistleblowerSubmitBox {
+  margin-bottom: 2em;
+}
+
+
+#NodeIntroPresentation,
+#NodeIntroDescription,
+#WhistleblowerSubmitBoxHeader,
+#WhistleblowerLoginPrompt {
+  white-space: pre-wrap;
+}
+
+#NodeIntroPresentation {
+  font-size: 1.6em;
+}
+
+#NodeIntroDescription {
+  font-size: 1.4em;
+}
+
+#WhistleblowerSubmitBoxHeader {
+  font-size: 1.4em;
+}
+
+#WhistleblowerSubmitBoxButton .btn {
+  font-size: 1.2em;
+}
+
+#DonationPanel {
+  margin-top: 3em;
+}

@@ -1,0 +1,48 @@
+<div id="TipCommunicationMessages" class="panel panel-default" data-ng-init="collapsed = false">
+  <div class="panel-heading" data-ng-click="collapsed = !collapsed; $event.stopPropagation();">
+    <div>
+      <span data-translate>Private messages</span>
+      <span class="pull-right">
+        <i data-ng-if="!collapsed" class="glyphicon glyphicon-collapse-down" uib-popover="{{'Collapse' | translate}}" popover-placement="left"></i>
+        <i data-ng-if="collapsed" class="glyphicon glyphicon-fullscreen" uib-popover="{{'Expand' | translate}}" popover-placement="left"></i>
+      </span>
+    </div>
+  </div>
+  <div class="TipPageSectionContent panel-body" data-ng-show="!collapsed">
+    <div data-ng-if="session.role !== 'whistleblower' || tip.enable_two_way_messages" class="row">
+      <div class="col-md-12">
+        <div class="form-inline">
+          <span data-ng-if="session.role === 'whistleblower'">
+            <label><span data-translate>Recipient</span>:<span>&nbsp;</span></label>
+            <select id="message-recipient-selector" data-ng-model="tip.msg_receiver_selected" data-ng-options="obj.key as obj.value for obj in tip.msg_receivers_selector | orderBy:'value'" class="form-control"></select>
+          </span>
+        </div>
+        <br />
+        <textarea id="TipCommunicationMessagesInput" data-ng-model="tip.newMessageContent" maxlength="4096" class="form-control" autocomplete="off"></textarea>
+        <span class="float-right">{{tip.newMessagesContent.length ? tip.newMessagesContent.length : '0'}}/4096</span>
+      </div>
+      <div class="col-md-12">
+        <span class="pull-left">
+          <button id="message-action-send" class="btn btn-sm btn-primary" data-ng-click="newMessage()" data-ng-disabled="!tip.newMessageContent || (session.role === 'whistleblower' && !tip.msg_receiver_selected)">
+            <i class="glyphicon glyphicon-envelope"></i>
+            <span data-translate>Send</span>
+          </button>
+        </span>
+        <span data-ng-if="session.role === 'receiver' && preferences.can_grant_permissions" class="pull-right form-group">
+          <label class="inline-checkbox">
+            <input data-ng-model="tip.enable_two_way_messages" data-ng-change="tip.setVar('enable_two_way_messages', tip.enable_two_way_messages)" type="checkbox" />
+            <span data-translate>Allow the whistleblower to send messages</span>
+          </label>
+        </span>
+      </div>
+    </div>
+    <div id="SubmissionMessages" data-ng-switch="session.role">
+      <div data-ng-switch-when='receiver' data-ng-repeat="message in tip.messages | orderBy:'creation_date':true">
+        <div data-ng-include="'views/partials/tip_message.html'"></div>
+      </div>
+      <div data-ng-switch-when='whistleblower' data-ng-if="tip.msg_receiver_selected" data-ng-repeat="message in tip.messages | filter: {receiver_involved: tip.msg_receiver_selected} | orderBy:'creation_date':true">
+        <div data-ng-include="'views/partials/tip_message.html'"></div>
+      </div>
+    </div>
+  </div>
+</div>

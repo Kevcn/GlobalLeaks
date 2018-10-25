@@ -1,0 +1,286 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from __future__ import print_function
+
+try:
+    input = raw_input
+except NameError:
+    pass
+
+import argparse
+import json
+import os
+import re
+import sqlite3
+import subprocess as sp
+import sys
+
+from datetime import datetime
+from six import text_type
+
+from globaleaks.utils import security
+from globaleaks.db import get_db_file
+from globaleaks.orm import make_db_uri, get_engine
+from globaleaks.models import config, config_desc
+from globaleaks.rest.requests import AdminNotificationDesc, AdminNodeDesc
+from globaleaks.settings import Settings
+
+
+def check_file(f):
+    if not os.path.isfile(f):
+        print("Missing file: {}".format(f), file=sys.stderr)
+    try:
+        with open(f, 'r'):
+            pass
+    except IOError as err:
+        print(err, file=sys.stderr)
+        sys.exit(1)
+
+
+def check_dir(d):
+    if not os.path.isdir(d):
+        print("Missing dir: {}".format(d), file=sys.stderr)
+        sys.exit(1)
+
+
+def default_backup_path():
+    t = datetime.now().strftime("%y_%m_%d")
+    name = "globaleaks_backup_{}.tar.gz".format(t)
+    return os.path.join("/tmp", name)
+
+
+def is_gl_running():
+    try:
+        with open(Settings.pidfile_path, 'r') as fd:
+            gl_pid = int(fd.read())
+            try:
+                os.kill(gl_pid, 0)
+            except OSError:
+                return False
+            return True
+    except IOError:
+        return False
+
+
+def backup(args):
+    workdir = args.workdir
+    check_dir(workdir)
+
+    must_stop = is_gl_running()
+
+    if must_stop: sp.check_call("service globaleaks stop", shell=True)
+    print("Creating an archive backup of the globaleaks setup. . .")
+    p_head, p_tail = os.path.split(args.workdir)
+
+    # Looks like: > tar -zcf globaleaks_backup_16_08_07.tar.gz -C /var/ globaleaks
+    sp.check_call(["tar", "-zcf", args.backuppath, "-C", p_head, p_tail])
+
+    if must_stop: sp.check_call("service globaleaks start", shell=True)
+    print("Success: The archived backup was created at:", args.backuppath)
+
+
+def restore(args):
+    check_dir(args.workdir)
+
+    check_file(args.backuppath)
+
+    print("\n", "-"*72)
+    print("WARNING this command will DELETE everything currently in {}".format(args.workdir))
+    print("-"*72)
+    ans = input("Are you sure that you want to continue? [y/n] ")
+    if not ans == "y":
+        sys.exit(0)
+    print("-"*72)
+
+    must_stop = is_gl_running()
+    if must_stop: sp.check_call("service globaleaks stop", shell=True)
+    print("Deleting {} . . .".format(args.workdir))
+
+    p_head, p_tail = os.path.split(args.workdir)
+
+    # TODO remove workdir str fmt
+    sp.check_call("find %s -type f -exec shred -vzn 3 {} \;" % args.workdir, shell=True)
+    sp.check_call(["rm", "-rf", args.workdir])
+
+    print("Extracting the archive {}".format(args.backuppath))
+    # Looks like: > tar -xf globaleaks_backup_16_08_07.tar.gz -C /var/ globaleaks
+    sp.check_call(["tar", "-xf", args.backuppath, "-C", p_head, p_tail])
+
+    if must_stop: sp.check_call("service globaleaks start", shell=True)
+
+    print("Success! globaleaks has been restored from a backup")
+
+
+def reset_pass(args):
+    check_dir(args.dbpath)
+    db_version, db_path = get_db_file(args.dbpath)
+
+    if db_version <= 0:
+        return
+
+    check_file(db_path)
+
+    salt = security.generateRandomSalt()
+
+    hashed_password = security.hash_password(args.password, salt)
+
+    QUERY = "UPDATE user SET salt=?, password=? WHERE username=? AND tid=?;"
+
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+    c.execute(QUERY, (salt, hashed_password, args.username, args.tid))
+
+    if c.rowcount != 1:
+        print("Failed! The user '{}' does not exist.".format(args.username))
+        sys.exit(1)
+
+    conn.commit()
+    conn.close()
+
+    print(("=================================\n"
+           "||  Password reset completed   ||\n"
+           "=================================\n"
+           "     Username: {}\n"
+           "     Password: {}\n"
+           "=================================\n"
+         ).format(args.username, args.password))
+
+
+def get_var(args):
+    check_dir(args.dbpath)
+    db_version, db_path = get_db_file(args.dbpath)
+
+    if db_version <= 0:
+        return
+
+    check_file(db_path)
+    try:
+        QUERY = "SELECT value FROM config WHERE var_name=? AND tid=?;"
+
+        conn = sqlite3.connect(db_path)
+        c = conn.cursor()
+        c.execute(QUERY, (args.varname, args.tid))
+        ret = c.fetchone()
+        if ret is None:
+            print("Failed to read value of var '{}'.".format(args.varname))
+            sys.exit(1)
+
+        conn.close()
+
+        print(json.loads(str(ret[0])))
+    except Exception as e:
+        # This string is dumped into stdout to ensure an exact string match
+        # will fail
+        print("ERROR")
+        raise e
+
+
+def select_cfg_factory(varname):
+    return factCls, item, config_desc.ConfigDescriptor[varname]
+
+
+def set_var(args, silent=False):
+    check_dir(args.dbpath)
+    db_version, db_path = get_db_file(args.dbpath)
+
+    if db_version <= 0:
+        return
+
+    check_file(db_path)
+    try:
+        value = json.dumps(args.value)
+
+        QUERY = "UPDATE config SET value=? WHERE var_name=? AND tid=?;"
+
+        conn = sqlite3.connect(db_path)
+        c = conn.cursor()
+        c.execute(QUERY, (value, args.varname, args.tid))
+        conn.commit()
+        conn.close()
+
+        if not silent:
+            print("Success! {} set to '{}'".format(args.varname, args.value))
+
+    except Exception as e:
+        # This string is dumped into stdout to ensure an exact string match
+        # will fail
+        print("ERROR")
+        raise e
+
+
+def enable_api_token(args):
+    args.varname = u'admin_api_token_digest'
+
+    token, args.value = security.generate_api_token()
+
+    set_var(args, silent=True)
+    print('The API token is: {}'.format(token))
+    print('You now have the only copy, keep it somewhere safe.')
+
+def disable_api_token(args):
+    args.varname = u'admin_api_token_digest'
+    args.value = ''
+
+    set_var(args, silent=True)
+    print('The API token was deleted')
+
+def add_db_path_arg(parser):
+    parser.add_argument("--dbpath",
+                        help="the path to the globaleaks db directory",
+                        default=Settings.working_path)
+
+Settings.eval_paths()
+
+parser = argparse.ArgumentParser(prog="gl-admin",
+                 description="GlobaLeaks backend administator interface")
+
+subp = parser.add_subparsers(title="commands")
+
+bck_p = subp.add_parser("backup", help="create a backup of the setup")
+bck_p.add_argument("-w", "--workdir", help="the location of dynamic globaleaks content",
+                   default=Settings.working_path)
+bck_p.add_argument("backuppath", nargs="?", help="the path and name of the backup",
+                   default=default_backup_path())
+bck_p.set_defaults(func=backup)
+
+res_p = subp.add_parser("restore", help="restore a backup of the setup")
+res_p.add_argument("-w", "--workdir", help="the location of dynamic gl content",
+                   default=Settings.working_path)
+res_p.add_argument("backuppath", nargs="?", help="the path and name of the backup",
+                   default=default_backup_path())
+res_p.set_defaults(func=restore)
+
+pw_p = subp.add_parser("resetpass", help="reset a user's password")
+add_db_path_arg(pw_p)
+pw_p.add_argument("--tid", help="the tenant id", default='1', type=int)
+pw_p.add_argument("username", help="the username used to login into GL")
+pw_p.add_argument("password", nargs="?", help="if not set a random password is generated",
+                  default=security.generateRandomKey(16))
+pw_p.set_defaults(func=reset_pass)
+
+rv_p = subp.add_parser("getvar", help="get database config variable")
+add_db_path_arg(rv_p)
+rv_p.add_argument("--tid", help="the tenant id", default='1', type=int)
+rv_p.add_argument("varname", help="the name of the config var", default='version', type=text_type)
+rv_p.set_defaults(func=get_var)
+
+sv_p = subp.add_parser("setvar", help="set database config variable")
+add_db_path_arg(sv_p)
+sv_p.add_argument("--tid", help="the tenant id", default='1', type=int)
+sv_p.add_argument("varname", help="the name of the config var", type=text_type)
+sv_p.add_argument("value", help="value which must be of the correct type Bool(0|1), Int(0-9^9), String(everything else)")
+sv_p.set_defaults(func=set_var)
+
+et_p = subp.add_parser("enable-api-token", help="enable the API token")
+add_db_path_arg(et_p)
+et_p.add_argument("--tid", help="the tenant id", default='1', type=int)
+et_p.set_defaults(func=enable_api_token)
+
+dt_p = subp.add_parser("disable-api-token", help="disable the API token")
+add_db_path_arg(dt_p)
+dt_p.add_argument("--tid", help="the tenant id", default='1', type=int)
+dt_p.set_defaults(func=disable_api_token)
+
+if __name__ == '__main__':
+    args = parser.parse_args()
+    args.func(args)

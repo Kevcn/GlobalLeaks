@@ -1,0 +1,87 @@
+<form name="preferencesForm" id="PreferencesForm">
+  <div data-ng-if="preferences.picture !== ''" class="imageThumbnail">
+    <img class="receiverImg" alt="user picture" data-ng-src="{{::Utils.imgDataUri(preferences.picture)}}" /><br />
+  </div>
+  <p id="Username"><label><span data-translate>Username</span>:</label> {{::preferences.username }}</p>
+  <p id="Role"><label><span data-translate>Role</span>:</label> <span>{{::session.role_l10n()}}</span></p>
+  <p id="Name"><label><span data-translate>Name</span>:</label>
+    <span data-ng-if="!editingName">
+      <span>{{::preferences.name }}</span>
+      <button class="btn btn-xs btn-default"
+        data-ng-show="!editingName"
+        data-ng-click="toggleNameEditing(); $event.stopPropagation();">
+        <span data-translate>Edit</span>
+      </button>
+    </span>
+    <input data-ng-if="editingName" class="form-control" name="name" data-ng-model="preferences.name" type="text" required />
+  </p>
+  <p id="EmailAddress"><label><span data-translate>Email address</span>:</label>
+    <span>
+      <span>{{::preferences.mail_address }}</span>
+      <button class="btn btn-xs btn-default"
+              data-ng-show="!editingEmailAddress"
+              data-ng-click="toggleEmailAddressEditing(); $event.stopPropagation();">
+        <span data-translate>Edit</span>
+      </button>
+    </span>
+    <div class="alert alert-warning" data-ng-if="preferences.change_email_address">
+      <div data-translate>Validation of email address change in progress.</div>
+      <div data-translate>Please check your inbox for further instructions.</div>
+    </div>
+    <div data-ng-if="editingEmailAddress" class="nested" data-ng-class="{'has-error': preferencesForm.$error.pattern}">
+      <label>Change in:</label>
+      <input class="form-control"name="mail_address" data-ng-model="preferences.mail_address" data-ng-pattern="email_regexp" type="text"/>
+    </div>
+  </p>
+  <div class="form-group" data-ng-show="editingEmail">
+    <label data-translate>Email address</label>
+    <input class="form-control" name="name" data-ng-model="preferences.mail_address" type="text" required />
+    <div class="text-danger" data-ng-show="editingEmail.name.$error.required" data-translate>This field is mandatory</div>
+  </div>
+  <p data-ng-if="preferences.description !== ''"><label data-translate>Description</label> {{::preferences.description }}</p>
+
+  <div id="Contexts" data-ng-if="session.role === 'receiver' && contexts.length > 1">
+    <label><span data-translate>Contexts</span></label>
+    <ul data-ng-repeat="context_id in preferences.contexts">
+      <li>{{contexts_by_id[context_id].name}}</li>
+    </ul>
+  </div>
+
+  <div id="Language" class="form-group" data-ng-if="languages_enabled_selector.length > 1">
+    <label data-translate>Language</label>
+    <select class="form-control" data-ng-model="preferences.language" data-ng-options="item.code as item.native for item in languages_enabled_selector"></select>
+  </div>
+
+  <div id="EnableNotifications" class="form-group" data-ng-if="session.role == 'receiver'">
+    <input data-ng-model="preferences.tip_notification" type="checkbox">
+    <label data-translate>Enable submission notification</label>
+  </div>
+
+  <div id="EditPGP" data-ng-form="pgpkeyForm" data-ng-if="node.enable_user_pgp_key_upload">
+    <div data-ng-show="preferences.pgp_key_fingerprint !== ''">
+      <div class="form-group">
+        <label data-translate>Details of the PGP key:</label>
+        <p><span data-translate>Fingerprint</span>: <span>{{preferences.pgp_key_fingerprint}}</span></p>
+        <p><span data-translate>Expiration date</span>: {{preferences.pgp_key_expiration | date:"dd/MM/yyyy"}}</p>
+      </div>
+      <div class="form-group">
+        <input data-ng-model="preferences.pgp_key_remove" type="checkbox">
+        <label data-translate>Remove the PGP key</label>
+      </div>
+    </div>
+    <div data-ng-hide="preferences.pgp_key_fingerprint !== ''">
+      <div class="position-relative" data-ng-class="{'has-error': pgpkeyForm.$invalid}">
+        <label data-translate>Set up encryption by providing a PGP public key</label>
+	<textarea data-pgp-pubkey-validator="canBeEmpty" class="form-control" data-ng-attr-placeholder="{{'Copy and paste the PGP public key here' | translate}}" data-ng-model="preferences.pgp_key_public"></textarea>
+        <label file-picker-input="loadPublicKeyFile(file)" data-label-text="{{'Select' | translate}}" class="btn btn-default textarea-btn"></label>
+      </div>
+    </div>
+  </div>
+
+  <br />
+
+  <button type="submit" class="btn btn-success" data-ng-click="save()" data-ng-disabled="preferencesForm.$invalid || pgpkeyForm.$invalid">
+    <i class="glyphicon glyphicon-ok"></i>
+    <span data-translate>Save</span>
+  </button>
+</form>

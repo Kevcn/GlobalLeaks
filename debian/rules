@@ -1,0 +1,34 @@
+#!/usr/bin/make -f
+#export DH_VERBOSE=1
+
+export PYBUILD_NAME=globaleaks
+export PYBUILD_DISABLE=test
+export PYBUILD_INSTALL_ARGS=--no-compile
+
+DISTRIBUTION := $(shell head -n1  debian/changelog | cut -d ' ' -f3 | cut -d ';' -f1)
+
+ifeq ($(DISTRIBUTION),bionic)
+        PYTHON_BIN := python3
+	PYTHON_VER := python3
+else
+        PYTHON_BIN := python2
+	PYTHON_VER := python2
+endif
+
+
+%:
+	dh $@ --with $(PYTHON_VER) --buildsystem=pybuild --sourcedirectory=backend/; \
+
+override_dh_installman:
+	cd backend && $(PYTHON_BIN) setup.py build_sphinx -b man
+	dh_installman
+
+override_dh_install:
+	dh_apparmor --profile-name=usr.bin.globaleaks
+	dh_install --fail-missing
+
+override_dh_python2:
+	dh_python2 --no-guessing-deps --no-guessing-versions
+
+override_dh_python3:
+	dh_python3 --no-guessing-deps

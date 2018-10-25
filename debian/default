@@ -1,0 +1,5 @@
+# This is a configuration file for /etc/init.d/globaleaks;
+# it allows you to perform common modifications to the behavior
+# of the globaleaks daemon.
+#
+# Default settings can be found at: /usr/share/globaleaks/default

@@ -1,0 +1,48 @@
+<div id="SubmissionStepContext" data-ng-switch="node.context_selector_type">
+  <div data-ng-switch-when="list">
+    <div id="ContextSelectorBox" class="row">
+      <div class="contextClarification" data-ng-if="node.contexts_clarification">{{node.contexts_clarification}}</div>
+      <div data-ng-repeat="context in selectable_contexts | orderBy:contextsOrderPredicate" id="context-{{$index}}" class="col-md-12" data-ng-click="selectContext(context)">
+        <div class="contextList">
+          <div class="contextListContent">
+            <span class="verticalAlignHelper"></span><span><img class="contextImg" alt="context picture" data-ng-if="context.picture !== ''" data-ng-src="{{::Utils.imgDataUri(context.picture)}}" /></span><span><b>{{context.name}}</b></span><span data-ng-if="::context.description" class="contextListDescription">{{::context.description}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div data-ng-switch-when="cards">
+    <div id="ContextSelectionBox" class="contextCards row">
+      <div id="contextClarification" data-ng-if="node.contexts_clarification">{{node.contexts_clarification}}</div>
+      <div data-ng-repeat="context in selectable_contexts | orderBy:contextsOrderPredicate" id="context-{{$index}}" data-ng-class="{'col-md-6': !node.show_small_context_cards, 'col-md-3': node.show_small_context_cards}" data-ng-click="selectContext(context)">
+        <div class="contextCard">
+          <div class="contextCardTitle row">
+            <div class="col-md-12">{{::context.name}}</div>
+          </div>
+          <div class="contextCardContent row">
+            <div class="contextCardFrame" data-ng-class="{'col-md-3': !node.small_context_cards, 'col-md-12': node.show_small_context_cards}">
+              <span class="verticalAlignHelper"></span><img class="contextImg" alt="context picture" data-ng-if="context.picture !== ''" data-ng-src="{{::Utils.imgDataUri(context.picture)}}" />
+            </div>
+            <div data-ng-if="!node.show_small_context_cards" class="contextCardDescription col-md-7">{{::context.description}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div data-ng-switch-when="search">
+    <div id="ContextSelectionDropdown" class="row">
+      <div class="col-md-12">
+        <h4 id="contextClarification" data-ng-if="node.contexts_clarification">{{node.contexts_clarification}}</h4>
+        <ui-select data-ng-model="selected.value" data-theme="bootstrap" data-on-select='selectContext($item)'>
+          <ui-select-match data-ng-attr-placeholder="{{'Type to search…' | translate}}">
+            <span data-ng-bind="$select.selected.name"></span>
+          </ui-select-match>
+          <ui-select-choices data-repeat="context in selectable_contexts | filter: {name: $select.search} track by context.id">
+            <span data-ng-bind-html="context.name | highlight: $select.search"></span>
+            <small data-ng-bind="context.description"></small>
+          </ui-select-choices>
+        </ui-select>
+      </div>
+    </div>
+  </div>
+</div>

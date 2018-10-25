@@ -1,0 +1,504 @@
+* {
+  word-wrap: break-word;
+}
+
+html {
+  height: 100%;
+  background-color: #FFF;
+}
+
+body {
+  position: relative;
+  margin: 0;
+  font-family: Verdana, sans-serif;
+  line-height: 1.8;
+  color: #222;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (min-width: 992px) {
+  body {
+    padding-bottom: 10em;
+  }
+
+  #FooterBox {
+    position: absolute;
+    bottom: 0;
+  }
+}
+
+.container-fluid {
+  width: 95%;
+  margin: 0;
+}
+
+#ContentBox {
+  padding: 2.4em;
+}
+
+#FooterBox {
+  width: 100%;
+  padding: 1em;
+  border-top: 1px solid #E5E5E5;
+  background-color: #F5F5F5;
+  color: #333;
+  text-align: center;
+  font-size: 1.25em;
+}
+
+#AttributionClause {
+  margin-top: 0.5em;
+}
+
+a, a:hover, a:active, a:focus {
+  outline: 0;
+}
+
+input, textarea, select {
+  padding-bottom: 0.5em;
+}
+
+table {
+  table-layout: fixed;
+  word-wrap: break-word;
+}
+
+.title1, .title2, .title3 {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+  line-height: 1.25em;
+}
+
+.title1 {
+  font-size: 1.3em;
+  font-weight: bold;
+}
+
+.title2 {
+  font-size: 1.2em;
+}
+
+.title3 {
+  font-size: 1.25em;
+}
+
+#HeaderBox {
+  color: #FFF;
+  background: #428bca;
+  border-bottom: 1px solid #357ebd;
+}
+
+#HeaderBoxContentLeft {
+  float: left;
+}
+
+#HeaderBoxContentRight {
+  float: left;
+}
+
+html[dir="rtl"] #HeaderBoxContentLeft {
+  float: right;
+}
+
+html[dir="rtl"] #HeaderBoxContentRight {
+  float: left;
+}
+
+#HeaderBox:after, #HeaderBox:after {
+  clear: both;
+  content: "";
+  display: block;
+}
+
+#MessagesConsoleBox {
+  width: 15%;
+  position: fixed;
+  z-index: 10;
+  top: 1em;
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+#LogoBox, #TitleBox, #UserBox {
+  z-index: 10;
+  padding: 1em;
+}
+
+#LogoBox {
+  width: 16em;
+}
+
+#LogoBox, #TitleBox {
+  float: left;
+}
+
+html[dir="rtl"] #LogoBox,
+html[dir="rtl"] #TitleBox {
+  float: right;
+}
+
+#UserBox {
+  float: right;
+}
+
+html[dir="rtl"] #UserBox {
+  float: left;
+}
+
+#TitleBox {
+  font-size: 2em;
+  font-weight: bold;
+  white-space: pre-wrap;
+}
+
+#LanguagePickerBox {
+  margin-bottom: 0.8em;
+}
+
+#LoginStatusBox, #LoginFormBox {
+  color: #000;
+  padding: 1em;
+  background-color: #FFF;
+  border-radius: 5px;
+}
+
+#LogoBox img {
+  width: 100%;
+  border-radius: 5px;
+}
+
+/** Submission details **/
+
+.keycode {
+  text-align: center;
+}
+
+#PrivacyBadgeBox {
+  background-color: #222;
+  color: #FFF;
+  font-size: 1em;
+  padding: 0.8em 1.25em 0.8em 1.25em;
+}
+
+.tab-content {
+  padding-top: 20px;
+}
+
+.preformatted {
+  white-space: pre-wrap;
+}
+
+.imageUpload {
+  position: relative;
+  width: 10em;
+  height: 10em;
+  border: 1px solid #DDD;
+  z-index: 0;
+  text-align: center;
+}
+
+html[dir] .imageUpload .changePictureButton, html[dir] .imageUpload .deletePictureButton {
+  position: absolute;
+  bottom: 10px;
+  text-align: center;
+  z-index: 10;
+}
+
+html[dir='ltr'] .imageUpload .changePictureButton, html[dir='rtl'] .imageUpload .deletePictureButton {
+  left: 10px;
+}
+
+html[dir='rtl'] .imageUpload .changePictureButton, html[dir='ltr'] .imageUpload .deletePictureButton {
+  right: 10px;
+}
+
+.imageUploadThumbnail {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.imageThumbnail, .imageUploadThumbnail, .contextCardFrame, .receiverCardFrame {
+  height: 10em;
+  margin-bottom: 1em;
+}
+
+.contextListContent {
+  height: 5em;
+}
+
+.contextListContent div, .contextListContent span,
+.contextFrame div, .contextFrame span,
+.receiverFrame div, .receiverFrame span {
+  padding: 0.5em;
+}
+
+.imageUploadThumbnailContent, .contextImg, .receiverImg {
+  background-color: #FFF;
+  max-width: 100%;
+  max-height: 100%;
+  height: auto;
+  vertical-align: middle;
+  text-align: center;
+  z-index: 1;
+}
+
+/** Wizard **/
+.wizard-block {
+  position: relative;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
+.wizard-block .title {
+  position: relative;
+  font-size: 1.3em;
+  color: #000;
+  margin-bottom: 1em;
+}
+
+.wizard-help-hint {
+  border-left: 3px solid #8a6d3b;
+  background-color: #fcf8e3;
+  padding: 1.25em;
+}
+
+.LoginErrorBox, .LoginErrorBoxHomepage {
+  display: inline-block;
+}
+
+.LoginErrorBox {
+  margin: 0.2em;
+}
+
+.LoginErrorBoxHomepage {
+  text-align: center;
+  margin: 0.2em;
+}
+
+.keyinput {
+  width: inherit;
+  display: inline;
+  font-family: monospace;
+  font-weight: bold;
+  text-align: center;
+}
+
+.nested {
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+.imgPreview {
+  height: 11.25em;
+  width: 11.25em;
+}
+
+.imgPreview img {
+  height: 100%;
+  width: 100%;
+}
+
+.fileUploadBox {
+  margin-bottom: 0.8em;
+}
+
+.fileUploadProgress {
+  position: absolute;
+  top: 0;
+  z-index: 100;
+  height: 11.25em;
+  width: 11.25em;
+  text-align: center;
+  line-height: 11.25em;
+}
+
+.fileUploadProgressOverlay {
+  background-color: black;
+  opacity: 0.3;
+  height: 11.25em;
+  width: 11.25em;
+  position: absolute;
+  top: 0;
+}
+
+.fileUploadIcon {
+  font-size: 3em;
+  color: white;
+}
+
+#ReceiverToolbar {
+  margin-bottom: 1.25em;
+}
+
+.label-as-badge {
+  margin-left: 0px;
+  margin-right: 3px;
+  border-radius: 1em;
+}
+
+.modal-title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+#TipList table {
+  table-layout: auto;
+}
+
+#TipList th, #TipList td {
+  white-space: nowrap;
+  min-width: 5em;
+}
+
+@-webkit-keyframes fadeinout {
+  0%,100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+@keyframes fadeinout {
+  0%,100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+.file-upload-error {
+  margin-top: 10px;
+}
+
+.verticalAlignHelper {
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+}
+
+.file-info-row {
+  margin-top: 10px;
+}
+
+.wbfile label {
+  margin: 0;
+}
+
+.wbfile .top-row {
+  min-height: 30px;
+}
+
+.side-spaced {
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+.text-bold {
+  font-weight: bold;
+}
+
+.disabled-interface {
+  pointer-events: none;
+  user-select: none;
+  background-color: #eee;
+  opacity: 0.60;
+  filter: alpha(opacity=0.60);
+}
+
+.panel-heading {
+  font-weight: bold;
+}
+
+textarea.form-control {
+  resize: vertical;
+}
+
+.position-relative {
+  position: relative;
+}
+
+.textarea-btn {
+  position: absolute;
+  top: 2.4em;
+}
+
+html[dir="ltr"] .textarea-btn {
+  right: 1em;
+}
+
+html[dir="rtl"] .textarea-btn {
+  left: 1em;
+}
+
+.file-upload input[type="file"] {
+  display: none;
+}
+
+html[dir] .btn-circle {
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 12px;
+  line-height: 1.428571429;
+  border-radius: 15px;
+}
+
+.glyphicon-none:before {
+  content: "\2122";
+  color: transparent !important;
+}
+
+.hidden {
+  display: none;
+  visibility: none;
+}
+
+html[dir] .badge-info {
+  background-color: #337ab7;
+}
+
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
+html[rtl] .float-left {
+  float: right;
+}
+
+html[rtl] .float-right {
+  float: left;
+}
+
+.display-block {
+  display: block;
+}
+
+.red-text, .red-asterisk {
+  color: #a94442;
+}
+
+.red-asterisk {
+  vertical-align: super;
+  font-size: smaller;
+}
+
+#SignupTos1 .tos-text, #SignupTos2 .tos-text {
+  height: 10em;
+  overflow-y: scroll;
+}
+
+.spaced-heading-elem {
+  padding-right: 2em;
+  padding-left: 2em;
+}
+
+.monospace {
+  font-family: monospace;
+}
+
+.bold {
+  font-weight: bold;
+}

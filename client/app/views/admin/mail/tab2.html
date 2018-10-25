@@ -1,0 +1,18 @@
+<div class="row">
+  <div class="col-md-8">
+    <div class="form-group">
+      <label data-translate>Template</label>
+      <select name="template" class="form-control" data-ng-model="template" data-ng-options="t as t for t in text_templates"></select>
+    </div>
+
+    <br /><br />
+
+    <div class="row" data-ng-if="template">
+      <div class="col-md-12">
+        <div class="form-group">
+          <textarea data-ng-model="admin.notification[template]" class="form-control" rows="10"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

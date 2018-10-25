@@ -1,0 +1,10 @@
+Dear {RecipientName},
+
+This is an email to notify you that the whistleblower for the submission {TipNum} has provided their identity.
+
+The submission can be accessed:
+via Tor at: {TorUrl}
+via HTTPS at: {HTTPSUrl}
+
+Kind regards,
+{NodeName}

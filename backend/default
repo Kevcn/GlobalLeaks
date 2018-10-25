@@ -1,0 +1,31 @@
+# LOGLEVEL = [log_level]
+#   permits to configure the globaleaks debug loglevel
+#   DEBUG, INFO, ERROR, CRITICAL
+LOGLEVEL=CRITICAL
+
+# USERNAME = [user_name]
+#   permits to configure the user privileges of the globaleaks process
+USERNAME=globaleaks
+
+# GROUP = [group_name]
+#   permits to configure the group privileges of the globaleaks process
+GROUP=globaleaks
+
+# APPARMOR_SANDBOXING = [0/1]
+#   permits to enable apparmor sandboxing
+APPARMOR_SANDBOXING=1
+
+# NETWORK_SANDBOXING = [0/1]
+#   permits to enable network sandboxing
+NETWORK_SANDBOXING=1
+
+# API_PREFIX = [prefix]
+API_PREFIX=
+
+# LISTENING_IP = [ip]
+#   permits to configure an ip on which the platform will listen
+LISTENING_IP=0.0.0.0
+
+# WORKING_DIR
+#   must be configured with the daemon working directory
+WORKING_DIR=/var/globaleaks/

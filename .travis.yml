@@ -1,0 +1,111 @@
+language: python
+dist: trusty
+sudo: required
+env:
+  global:
+    - secure: eEQ289kJu6Emje6PE40bb6YqgEfvoeZA+L+O18SQA0Xqcvf08Et6EwyPbM0iT0jgtcO5Z71YG2cWUs325yRecAiGvutBuUoWkSX9t7fblJnRHHpOVnSPTUPKqG+pFNlf+NlvnH0PUJ7zVFDI1MFMx7duJpIwu8vA7eMoQsyHDOU=
+    - secure: LGRZ99OhmNCZfFAiS7/p/0Rc2ku2fJGYlWnv/LKnurfQpWZ9RPeuha2sRkpgwnv+c7McJ5SgnLtxrpQ4nGJjyw0A5qeVIlauv/Wy++6nnVT4o9HApZ/ApEUj01jNNrZhxcGv3WrFxae2sUWX3h4+kyYYdedsO0DYwsJAtjCknPQ=
+    - secure: DVzp1ZdsOyrZhVv/fos6sTFQIVzPfgXVwb5QlWhtshQxn7P1gt1eWWlaHsz5GTGV9awrKWn2ULTguvAN6ltY4JBMEELanQsqJIIyennlRVzu2gMBpHbY5xXonsT2Ri7x+ZzYtwhYn47LXBsmV303z7WWki1OCGVGu3UH8azLMcU=
+matrix:
+  fast_finish: true
+  include:
+    - env: GLTEST='py3_test' TESTS_REQUIREMENTS='bionic' CODACY=true
+      python: "3.6"
+
+    - env: GLTEST='py2_test' TESTS_REQUIREMENTS='xenial'
+      python: "2.7"
+
+    - env: GLTEST='lint'
+      python: "3.6"
+
+    - env: GLTEST='build_and_install' BUILD_DISTRO='bionic'
+      python: "3.6"
+
+    - env: GLTEST='build_and_install' BUILD_DISTRO='xenial'
+      python: "3.6"
+
+    - env: GLTEST='build_and_install' BUILD_DISTRO='stretch'
+      python: "3.6"
+
+    - env: GLTEST='end2end-0' BROWSER='edge 17'
+      python: "3.6"
+      addons:
+        sauce_connect: true
+
+    - env: GLTEST='end2end-1' BROWSER='ie 11'
+      python: "3.6"
+      addons:
+        sauce_connect: true
+
+    - env: GLTEST='end2end-2' BROWSER='firefox 34'
+      python: "3.6"
+      addons:
+        sauce_connect: true
+
+    - env: GLTEST='end2end-3' BROWSER='firefox 60'
+      python: "3.6"
+      addons:
+        sauce_connect: true
+
+    - env: GLTEST='end2end-4' BROWSER='chrome 37'
+      python: "3.6"
+      addons:
+        sauce_connect: true
+
+    - env: GLTEST='end2end-5' BROWSER='chrome 67'
+      python: "3.6"
+      addons:
+        sauce_connect: true
+
+    - env: GLTEST='end2end-6' BROWSER='safari 8'
+      python: "3.6"
+      addons:
+        sauce_connect: true
+
+    - env: GLTEST='end2end-7' BROWSER='safari 10'
+      python: "3.6"
+      addons:
+        sauce_connect: true
+
+    - env: GLTEST='end2end-8' BROWSER='android 4.4'
+      python: "3.6"
+      addons:
+        sauce_connect: true
+
+    - env: GLTEST='end2end-9' BROWSER='android 6.0'
+      python: "3.6"
+      addons:
+        sauce_connect: true
+
+    - env: GLTEST='end2end-10' BROWSER='ipad 9.3'
+      python: "3.6"
+      addons:
+        sauce_connect: true
+
+    - env: GLTEST='end2end-11' BROWSER='ipad 11.3'
+      python: "3.6"
+      addons:
+        sauce_connect: true
+
+  allow_failures:
+    - env: GLTEST='build_and_install' BUILD_DISTRO='bionic'
+    - env: GLTEST='build_and_install' BUILD_DISTRO='xenial'
+    - env: GLTEST='build_and_install' BUILD_DISTRO='stretch'
+    - env: GLTEST='end2end-0' BROWSER='edge 17'
+    - env: GLTEST='end2end-1' BROWSER='ie 11'
+    - env: GLTEST='end2end-2' BROWSER='firefox 34'
+    - env: GLTEST='end2end-3' BROWSER='firefox 60'
+    - env: GLTEST='end2end-4' BROWSER='chrome 37'
+    - env: GLTEST='end2end-5' BROWSER='chrome 67'
+    - env: GLTEST='end2end-6' BROWSER='safari 8'
+    - env: GLTEST='end2end-7' BROWSER='safari 10'
+    - env: GLTEST='end2end-8' BROWSER='android 4.4'
+    - env: GLTEST='end2end-9' BROWSER='android 6.0'
+    - env: GLTEST='end2end-10' BROWSER='ipad 9.3'
+    - env: GLTEST='end2end-11' BROWSER='ipad 11.3'
+before_install:
+  - nvm install stable
+  - nvm use stable
+install: true
+script:
+  - $TRAVIS_BUILD_DIR/travis/script.sh

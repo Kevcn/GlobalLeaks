@@ -1,0 +1,332 @@
+<div class="row">
+  <div class="col-md-6">
+    <div class="form-group">
+      <label>
+        <input data-ng-model="admin.node.disable_submissions" type="checkbox" />
+        <span data-translate>Disable submissions</span>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input data-ng-model="admin.node.allow_unencrypted" data-ng-click="open_modal_allow_unencrypted()" type="checkbox" />
+        <span data-translate>Enable insecure configuration without PGP encryption</span>
+      </label>
+      <div data-ng-if="admin.node.allow_unencrypted">
+        <div>
+          <span class="label label-warning" data-translate>Warning</span>
+          <span data-translate>By enabling this option, the system will be storing the submitted files unencrypted on your server.</span>
+	  <span data-translate>This happens whenever encryption is unavailable.</span>
+	</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input data-ng-model="admin.node.disable_encryption_warnings" type="checkbox" />
+        <span data-translate>Disable messages that warn of missing encryption</span>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input data-ng-model="admin.node.allow_iframes_inclusion" type="checkbox" />
+        <span data-translate>Allow other websites to include the platform inside iframes</span>
+      </label>
+      <div data-ng-if="admin.node.allow_iframes_inclusion">
+        <span class="label label-warning" data-translate>Warning</span>
+        <span data-translate>By enabling this option, you are allowing other websites to include the platform inside iframes; this could potentially be used to endanger the platform or intercept users' communications</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input data-ng-model="admin.node.can_postpone_expiration" type="checkbox" />
+        <span data-translate>Allow recipients to postpone expiration date of the submission</span>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input data-ng-model="admin.node.can_delete_submission" type="checkbox" />
+        <span data-translate>Allow recipients to delete submissions</span>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input data-ng-model="admin.node.can_grant_permissions" type="checkbox" />
+        <span data-translate>Allow recipients to grant permissions to whistleblowers on specific submissions</span>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input data-ng-model="admin.node.allow_indexing" type="checkbox" />
+        <span data-translate>Enable search engines indexing</span>
+      </label>
+    </div>
+
+    <div class="form-group" data-ng-if="admin.node.allow_indexing">
+      <label data-translate>Description</label>
+      <div>
+        <textarea class="form-control" data-ng-model="admin.node.description"></textarea>
+      </div>
+    </div>
+
+    <div class="form-group" data-ng-if="!admin.node.disable_privacy_badge">
+      <label>
+        <input data-ng-model="admin.node.enable_custom_privacy_badge" type="checkbox" />
+        <span data-translate>Enable custom privacy panel</span>
+      </label>
+    </div>
+
+    <div class="form-group" data-ng-if="!admin.node.disable_privacy_badge && admin.node.enable_custom_privacy_badge">
+      <label data-translate>Custom privacy panel</label>
+      <label>(<span data-translate>Text shown when the whistleblower is not using Tor</span>)</label>
+      <div>
+        <input class="form-control" data-ng-model="admin.node.custom_privacy_badge_text" type="text" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input data-ng-model="admin.node.disable_privacy_badge" type="checkbox" />
+        <span data-translate>Disable the privacy panel</span>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input data-ng-model="admin.node.enable_disclaimer" type="checkbox" />
+        <span data-translate>Enable disclaimer</span>
+      </label>
+    </div>
+
+    <div class="nested" data-ng-if="admin.node.enable_disclaimer">
+      <div class="form-group">
+        <label data-translate>Title</label>
+        <input class="form-control" data-ng-model="admin.node.disclaimer_title" type="text" />
+      </div>
+
+      <div class="form-group">
+        <label data-translate>Text</label>
+        <div>
+          <textarea class="form-control" data-ng-model="admin.node.disclaimer_text"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input data-ng-model="admin.node.disable_key_code_hint" type="checkbox" />
+        <span data-translate>Disable the key code hint</span>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input data-ng-model="admin.node.disable_donation_panel" type="checkbox" />
+        <span data-translate>Disable the donation panel</span>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input data-ng-model="admin.node.enable_captcha" type="checkbox" />
+        <span data-translate>Enable CAPTCHA mechanism</span>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input data-ng-model="admin.node.enable_proof_of_work" type="checkbox" />
+        <span data-translate>Enable proof of work mechanism</span>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label data-translate>Amount of days till whistleblower access expires</label>
+      <input class="form-control" data-ng-model="admin.node.wbtip_timetolive" type="number" min="1" />
+      <div data-translate>For security reasons the whistleblower access is subject to expiration.</div>
+      <div data-translate>Tweak this setting only if you know what you are doing.</div>
+    </div>
+
+    <div class="form-group">
+      <label data-translate>Password change interval</label>
+      <input class="form-control" data-ng-model="admin.node.password_change_period" type="number" min="0" />
+      <div data-translate>For security reasons, password changes are required at regular intervals.</div>
+      <div data-translate>Set the value to 0 to disable this feature.</div>
+    </div>
+
+    <div class="form-group">
+      <label data-translate>Landing page</label>
+      <select name="type" class="form-control" data-ng-model="admin.node.landing_page" required>
+        <option value="homepage">/</option>
+        <option value="submissionpage">/submission</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label data-translate>Default questionnaire</label>
+      <select class="form-control" data-ng-model="admin.node.default_questionnaire" data-ng-options="item.id as item.name for item in admin.questionnaires"></select>
+    </div>
+
+    <div class="form-group">
+      <label data-translate>Title of the submission page</label>
+      <div>
+        <textarea class="form-control" data-ng-model="admin.node.header_title_submissionpage"></textarea>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label data-translate>Text shown on top of the interface for selecting contexts</label>
+      <div>
+        <textarea class="form-control" data-ng-model="admin.node.contexts_clarification"></textarea>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label data-translate>Text of prompt for whistleblowers to log in</label>
+      <div>
+        <textarea class="form-control" data-ng-model="admin.node.whistleblowing_receipt_prompt"></textarea>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input data-ng-model="admin.node.show_contexts_in_alphabetical_order" type="checkbox" />
+        <span data-translate>Show contexts in alphabetical order</span>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label data-translate>Type of context selector:</label>
+      <select name="type" class="form-control" data-ng-model="admin.node.context_selector_type" required>
+        <option value="list">list</option>
+        <option value="cards">cards</option>
+        <option value="search">search</option>
+      </select>
+    </div>
+
+    <div class="form-group" data-ng-if="admin.node.context_selector_type === 'cards'">
+      <label>
+        <input data-ng-model="admin.node.show_small_context_cards" type="checkbox" />
+        <span data-translate>Show small context cards on submission interface</span>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label data-translate>Title of the receipt page</label>
+      <div>
+        <textarea class="form-control" data-ng-model="admin.node.header_title_receiptpage"></textarea>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label data-translate>Title of the submission status page</label>
+      <div>
+        <textarea class="form-control" data-ng-model="admin.node.header_title_tippage"></textarea>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <span data-translate>Size limit for file attachments</span>
+        <span data-translate>in megabytes</span>
+      </label>
+      <input class="form-control" data-ng-model="admin.node.maximum_filesize" type="number" min="0" />
+    </div>
+
+    <div class="form-group">
+      <input data-ng-model="admin.node.enable_admin_exception_notification" type="checkbox">
+      <label data-translate>Notify administrators of software problems</label>
+    </div>
+
+    <div class="form-group">
+      <input data-ng-model="admin.node.enable_developers_exception_notification" type="checkbox">
+      <label data-translate>Notify developers of software problems</label>
+      <div data-translate>By enabling this feature, you will contribute to the development and security of the platform.</div>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input data-ng-model="admin.node.basic_auth" type="checkbox" />
+        <span data-translate>Enable HTTP Basic Authentication to limit platform access</span>
+      </label>
+      <div data-ng-if="admin.node.basic_auth" class="nested">
+        <label data-translate>Username</label>
+        <input class="form-control" name="username" data-ng-model="admin.node.basic_auth_username" type="text" autocomplete="off" />
+        <label data-translate>Password</label>
+        <input class="form-control" name="password" data-ng-model="admin.node.basic_auth_password" type="text" autocomplete="off" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input data-ng-model="admin.node.ip_filter_authenticated_enable" type="checkbox" />
+        <span data-translate>Restrict privileged logins to specific IP addresses</span>
+      </label>
+      <div data-ng-if="admin.node.ip_filter_authenticated_enable" class="nested">
+        <label data-translate>Whitelisted IP addresses</label>
+        <input class="form-control" name="ip_filter_list" data-ng-model="admin.node.ip_filter_authenticated" type="text" autocomplete="off" />
+        <span data-translate>Either individual IP addresses or CIDR ranges are accepted here.</span>
+        <span data-translate>Example:</span>
+        <span>192.0.2.0/24</span>
+        <br />
+        <br />
+        <span data-translate>Each entry must be separated with a comma.</span>
+        <span data-translate>Example:</span>
+        <span>212.35.212.87,192.0.2.0/24,2001:db8::/32</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <input data-ng-model="admin.node.enable_password_reset" type="checkbox" />
+      <label data-translate>Allow users to reset their passwords</label>
+      <div data-ng-if="admin.node.enable_password_reset">
+        <span class="label label-warning" data-translate>Warning</span>
+        <span data-translate>Allowing users to reset their passwords may reduce the security of the platform due to security becoming dependent on the security of user's email accounts.</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <input data-ng-model="admin.node.enable_user_pgp_key_upload" type="checkbox" />
+      <label data-translate>Enable users to upload their PGP keys</label>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input data-ng-model="admin.node.multisite_login" type="checkbox" />
+        <span data-translate>Enable multi-site login</span>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input data-ng-model="admin.node.simplified_login" type="checkbox" />
+        <span data-translate>Enable simplified login</span>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input data-ng-model="admin.node.enable_experimental_features" type="checkbox" />
+        <span data-translate>Enable experimental features</span>
+      </label>
+      <div data-ng-if="admin.node.enable_experimental_features">
+        <span class="label label-danger" data-translate>Warning</span>
+        <span data-translate>The experimental features may be less stable or even not work at all; enable this option at your own risk. Support for these features may vary and they may be removed in the future.</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <button class="btn btn-success"
+              data-ng-disabled="advancedForm.$invalid"
+              data-ng-click="updateNode()" type="submit">
+        <i class="glyphicon glyphicon-ok"></i>
+        <span data-translate>Save</span>
+      </button>
+    </div>
+  </div>
+</div>

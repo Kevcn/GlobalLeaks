@@ -1,0 +1,50 @@
+#!/bin/sh
+# This is the post installation script for globaleaks
+set -e
+
+if which pycompile >/dev/null 2>&1; then
+  pycompile -p globaleaks
+fi
+
+DISTRO="unknown"
+DISTRO_CODENAME="unknown"
+if which lsb_release >/dev/null; then
+  DISTRO="$(lsb_release -is)"
+  DISTRO_CODENAME="$(lsb_release -cs)"
+fi
+
+if [ "$DISTRO" = "LinuxMint" ]; then
+  DISTRO="Ubuntu"
+  DISTRO_CODENAME=`grep UBUNTU_CODENAME /etc/os-release | sed -e 's/UBUNTU_CODENAME=//'`
+fi
+
+# Create globaleaks user and add the user to required groups
+if ! id -u globaleaks >/dev/null 2>&1; then
+  adduser --quiet \
+          --system \
+          --disabled-login \
+          --disabled-password \
+          --home /var/globaleaks \
+          --shell /bin/false \
+          --group \
+          globaleaks
+fi
+
+usermod -a -G debian-tor globaleaks
+
+# Create globaleaks service directories with proper permissios
+gl-fix-permissions
+
+# Remove old configuration of Tor used before txtorcon adoption
+if $(grep -q -i globaleaks /etc/tor/torrc >/dev/null 2>&1); then
+  sed -i '/BEGIN GlobaLeaks/,/END GlobaLeaks/d' /etc/tor/torrc
+  service tor restart
+fi
+
+# raise haveged default water mark to 4067 bits
+# for the reason for the 4067 bits see:
+#   - https://github.com/globaleaks/GlobaLeaks/issues/1722
+sed -i 's/DAEMON_ARGS="-w 1024"/DAEMON_ARGS="-w 4067"/g' /etc/default/haveged
+service haveged restart
+
+#DEBHELPER#

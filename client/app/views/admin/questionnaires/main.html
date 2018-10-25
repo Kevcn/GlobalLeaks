@@ -1,0 +1,95 @@
+<div class="adminConfigSection row">
+  <div class="col-md-12">
+    <div class="editorTitle">
+      <span data-translate>Questionnaires</span>
+      <button class="btn btn-xs btn-primary show-add-questionnaire-btn" data-ng-click="toggleAddQuestionnaire()">
+        <i class="glyphicon glyphicon-plus"></i>
+        <span data-translate>Add</span>
+      </button>
+      <label file-picker-input="importQuestionnaire(file)" data-label-text="Import" class="btn btn-xs btn-default"></label>
+    </div>
+    <div class="adminConfigSection row" data-ng-controller="AdminQuestionnaireAddCtrl" data-ng-if="showAddQuestionnaire">
+      <form id="newQuestionnaire" class="addQuestionnaire col-md-6" novalidate>
+        <div class="form-group">
+          <label>
+            <span data-translate>Name</span>
+            <span class="text-danger" uib-popover="{{'This field is mandatory' | translate}}" popover-placement="right">*</span>
+          </label>
+        <div data-ng-class="{'has-error': newQuestionnaire.name.$error.required}">
+            <input name="name" class="form-control" data-ng-model="new_questionnaire.name" type="text" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <button id="add-questionnaire-btn" class="btn btn-primary" data-ng-disabled="newQuestionnaire.$invalid" data-ng-click="add_questionnaire(); toggleAddQuestionnaire()" type="button">
+            <i class="glyphicon glyphicon-plus-sign"></i>
+            <span data-translate>Add</span>
+          </button>
+        </div>
+      </form>
+    </div>
+    <div data-ng-repeat="questionnaire in admin.questionnaires | filter: {editable: true}">
+      <form id="questionnaire-{{$index}}" class="configItem" name="editQuestionnaire" data-ng-controller="AdminQuestionnaireEditorCtrl" novalidate>
+        <div>
+          <div class="editorHeader row" data-ng-click="toggleEditing(); $event.stopPropagation();">
+            <span class="col-md-7 editorHeaderTitle">{{questionnaire.name}}</span>
+            <span class="col-md-5" data-ng-if="questionnaire.editable">
+              <span class="pull-right">
+                <button
+                  class="btn btn-xs btn-default"
+                  data-ng-show="!editing"
+                  data-ng-click="toggleEditing(); $event.stopPropagation();">
+                  <span data-translate>Edit</span>
+                </button>
+                <button
+                  class="btn btn-xs btn-success"
+                  data-ng-show="editing"
+                  data-ng-if="questionnaire.editable"
+                  data-ng-click="save_questionnaire(questionnaire)">
+                  <span data-translate>Save</span>
+                </button>
+                <button
+                  class="btn btn-xs btn-default"
+                  data-ng-show="editing"
+                  data-ng-click="toggleEditing(); $event.stopPropagation();">
+                  <span data-translate>Cancel</span>
+                </button>
+                <a class="downloadButton btn btn-xs btn-default"
+                  data-ng-click="exportQuestionnaire(questionnaire); $event.stopPropagation()">
+                  <i class="glyphicon glyphicon-save-file"></i>
+                  <span data-translate>Export</span>
+                </a>
+                <button
+                  class="btn btn-xs btn-default"
+                  data-ng-click="duplicate_questionnaire(questionnaire)">
+                  <i class="glyphicon glyphicon-duplicate"></i>
+                  <span data-translate>Duplicate</span>
+                </button>
+                <button
+                  class="btn btn-xs btn-danger"
+                  data-ng-if="questionnaire.editable"
+                  data-ng-click="delete_questionnaire(questionnaire); $event.stopPropagation();">
+                  <span data-translate>Delete</span>
+                </button>
+              </span>
+            </span>
+          </div>
+          <div data-ng-if="editing">
+            <hr />
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label data-translate>Name</label>
+                  <input name="name" class="form-control" data-ng-model="questionnaire.name" type="text" required>
+                  <div class="text-danger" data-ng-show="editQuestionnaire.name.$error.required">
+                    <span data-translate>This field is mandatory</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-12" data-ng-include="'views/admin/questionnaires/steps.html'"></div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

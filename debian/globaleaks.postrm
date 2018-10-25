@@ -1,0 +1,27 @@
+#!/bin/sh
+set -e
+
+remove() {
+  rm -rf /var/run/globaleaks
+}
+
+purge() {
+  echo "Forcefully purging all globaleaks data"
+  rm -rf /var/globaleaks
+}
+
+case "$1" in
+  "remove")
+    remove
+    break
+    ;;
+  "purge")
+    remove
+    purge
+    break;
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0

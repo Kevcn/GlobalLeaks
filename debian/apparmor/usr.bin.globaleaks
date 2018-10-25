@@ -1,0 +1,60 @@
+#include <tunables/global>
+
+profile usr.bin.globaleaks flags=(attach_disconnected) {
+    #include <abstractions/base>
+    #include <abstractions/nameservice>
+
+    capability setgid,
+    capability setuid,
+    capability fsetid,
+    capability fowner,
+    capability chown,
+    capability dac_override,
+    capability dac_read_search,
+    capability sys_tty_config,
+
+    /etc/lsb-release r,
+    /etc/mime.types r,
+    /etc/python2.7/** r,
+
+    @{PROC}/ r,
+    @{PROC}/@{pid}/fd/ r,
+    @{PROC}/@{pid}/status r,
+    owner @{PROC}/@{pid}/mounts r,
+
+    /usr/bin/ r,
+    /usr/bin/globaleaks r,
+
+    # sh, dash and gpg are required by python_gnupg
+    # that sadly use the shell for communicating to gnupg
+    /bin/sh ix,
+    /bin/dash ix,
+    /usr/bin/gpg{,1} ix,
+    /usr/bin/python{,2,2.7,3,3.[0-9]} ix,
+
+    /usr/ r,
+    /usr/share/** r,
+
+    /usr/include/python{,2,2.7,3,3.[0-9]}/** r,
+    /usr/lib/python{,2,2.7,3,3.[0-9]}/** mr,
+    /usr/local/lib/python{,2,2.7,3,3.[0-9]}/** mr,
+
+    /var/globaleaks/ wr,
+    /var/globaleaks/** lrwk,
+
+    /{,var/}run/globaleaks/globaleaks.pid rw,
+    /{,var/}run/tor/control rw,
+    /{,var/}run/tor/control.authcookie r,
+
+    /{run,dev}/shm/ r,
+    /{run,dev}/shm/globaleaks/ rwk,
+    /{run,dev}/shm/globaleaks/** lrwk,
+
+    owner /tmp/** rwkl,
+    owner /var/tmp/** rwkl,
+
+    # Explicit silent deny rules:
+    deny /bin/uname x,      # needed by os.uname in pip
+    deny /usr/bin/gcc-** x, # needed to silent deny errors for gpg trying to use gcc wtf?!
+    deny /sbin/ldconfig x,  # needed to silent deny errors for gpg
+}

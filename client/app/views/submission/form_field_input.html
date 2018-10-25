@@ -1,0 +1,139 @@
+<div class="Question" data-ng-form="{{fieldFormVarName}}">
+  <div data-ng-controller="SubmissionFormFieldCtrl" data-ng-switch="field.template_id" data-ng-init="onAnswerUpdate(field, entry)">
+    <div data-ng-switch-when="whistleblower_identity">
+      <div data-ng-include="'views/submission/fields/whistleblower_identity.html'"></div>
+    </div>
+    <div data-ng-switch-default data-ng-switch="field.type">
+      <div data-ng-switch-when="textarea" data-ng-class="{'has-error': f['input-' + entryIndex].$invalid}">
+        <textarea id="{{::fieldEntry}}"
+                  data-ng-init="maxlength = field.attrs.max_len.value > 0 ? field.attrs.max_len.value : 4096"
+                  name="input-{{::entryIndex}}"
+                  class="form-control inputelem"
+                  data-ng-model="entry['value']"
+                  data-ng-change="onAnswerUpdate(field, entry)"
+                  data-ng-minlength="field.attrs.min_len.value"
+                  maxlength="{{::maxlength}}"
+                  aria-label="{{::field.label}}"
+                  data-ng-required="field.required_status"
+                  data-ng-attr-placeholder="{{field.placeholder}}"
+                  dynamic-textarea></textarea>
+        <div>
+          <div data-ng-if="entry['value'].length && maxlength >= 0 && (maxlength - entry['value'].length) <= 50" class="float-right">{{entry['value'].length}}/{{maxlength}}</div>
+        </div>
+        <div data-ng-class="{'has-error': field.required_status}">
+          <span ng-show="f['input-' + entryIndex].$error.required" data-ng-class="{'text-danger': (f['input-' + entryIndex].$dirty || displayErrors())}" data-translate>This field is mandatory.</span>
+          <span ng-show="f['input-' + entryIndex].$error.minlength" data-ng-class="{'text-danger': (f['input-' + entryIndex].$dirty || displayErrors())}" data-translate>The answer is too short.</span>
+        </div>
+    </div>
+      <div data-ng-switch-when="multichoice" data-ng-class="{'has-error': field.required_status}">
+        <div data-ng-class="{'radio': (field.attrs.layout_orientation.value != 'horizontal')}">
+          <label data-ng-class="{'radio-inline': (field.attrs.layout_orientation.value == 'horizontal')}" data-ng-repeat="option in field.options | orderBy:field.attrs.display_alphabetically.value ? 'label' : 'presentation_order'" name="{{'input-' +  entryIndex}}">
+            <input class="inputelem" type="radio" id="{{::fieldEntry}}-option-{{::$index}}" data-ng-model="entry['value']" data-ng-change="onAnswerUpdate(field, entry)" value="{{option.id}}" data-ng-required="field.required_status" />
+            <span>{{::option.label}}</span>
+          </label>
+        </div>
+      </div>
+      <div data-ng-switch-when="selectbox" data-ng-class="{'has-error': field.required_status}">
+        <select id="{{::fieldEntry}}" name="{{'input-' +  entryIndex}}" class="form-control inputelem" data-ng-model="entry['value']" data-ng-change="onAnswerUpdate(field, entry)" data-ng-required="field.required_status">
+          <option style="display:none" value=""></option>
+          <option data-ng-repeat="option in field.options | orderBy:field.attrs.display_alphabetically.value ? 'label' : 'presentation_order'" id="{{::fieldEntry}}-option-{{::$index}}" value="{{option.id}}">{{::option.label}}</option>
+        </select>
+      </div>
+      <div data-ng-switch-when="checkbox" data-ng-class="{'has-error': field.required_status}">
+        <div data-ng-class="{'checkbox': (field.attrs.layout_orientation.value != 'horizontal')}">
+          <label data-ng-repeat="option in field.options | orderBy:field.attrs.display_alphabetically.value ? 'label' : 'presentation_order'" data-ng-class="{'checkbox-inline': (field.attrs.layout_orientation.value == 'horizontal'), 'has-error': f['input-' + $parent.entryIndex + '-option-' + entryIndex].$invalid}">
+            <input id="{{::fieldEntry}}"
+                   name="{{'input-' + $parent.entryIndex + '-option-' + entryIndex}}"
+                   class="inputelem"
+                   data-ng-model="entry[option.id]"
+                   data-ng-change="onAnswerUpdate(field, entry)"
+                   data-ng-required="field.required_status"
+                   data-ng-attr-placeholder="{{field.placeholder || 'false'}}"
+                   type="checkbox" />
+            <span>{{::option.label}}</span>
+          </label>
+        </div>
+      </div>
+      <div data-ng-switch-when="date" data-ng-class="{'has-error': field.required_status}">
+        <div class="input-group">
+          <input id="{{::fieldEntry}}"
+                 name="input-{{entryIndex}}"
+                 class="form-control inputelem"
+                 type="text"
+                 maxlength="4096"
+                 readonly="readonly"
+                 aria-label="{{::field.label}}"
+                 data-ng-model="entry['value']"
+                 data-ng-change="onAnswerUpdate(field, entry)"
+                 data-ng-required="field.required_status"
+                 data-ng-attr-placeholder="{{field.placeholder}}"
+                 data-ng-click="open()"
+                 uib-datepicker-popup 
+                 datepicker-options="dateOptions"
+                 is-open="status.opened"
+                 show-button-bar="false" />
+          <span class="input-group-btn">
+            <button type="submit" class="btn btn-sm btn-default" data-ng-click="open()"><i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+        </div>
+      </div>
+      <div data-ng-switch-when="tos">
+        <div class="form-group tos-text" data-ng-click="entry['value'] = !entry['value']">{{field.attrs.text.value}}</div>
+        <div class="checkbox" data-ng-class="{'has-error': field.required_status}">
+          <label>
+            <input id="{{::fieldEntry}}"
+                   name="input-{{entryIndex}}"
+                   class="inputelem"
+                   data-ng-model="entry['value']"
+                   data-ng-change="onAnswerUpdate(field, entry)"
+                   data-ng-required="field.required_status"
+                   value="{{field.value}}"
+                   data-ng-attr-placeholder="{{field.placeholder || 'false'}}"
+                   type="checkbox" />
+            <span class="tos-checkbox-label">{{field.attrs.checkbox_label.value}}</span>
+          </label>
+        </div>
+      </div>
+      <div data-ng-switch-when="fileupload">
+        <div id="{{::fieldEntry}}" data-ng-include="'views/partials/rfile_upload_button.html'"></div>
+      </div>
+      <div data-ng-switch-when="fieldgroup">
+        <div data-ng-include="'views/submission/form.html'"></div>
+      </div>
+      <div data-ng-switch-default data-ng-class="{'has-error': field.required_status}">
+        <input id="{{::fieldEntry}}"
+               name="input-{{entryIndex}}"
+               class="form-control inputelem"
+               data-ng-init="maxlength = field.attrs.max_len.value > 0 ? field.attrs.max_len.value : 4096"
+               data-ng-model="entry['value']"
+               data-ng-change="onAnswerUpdate(field, entry)"
+               data-ng-model-options="{'debounce': 350}"
+               data-ng-minlength="field.attrs.min_len.value"
+               data-ng-pattern="validator"
+               maxlength="{{maxlength}}"
+               data-ng-required="field.required_status"
+               data-ng-attr-placeholder="{{field.placeholder}}"
+               aria-label="{{::field.label}}"
+               type="text" />
+        <div>
+          <div data-ng-if="f['input-' + entryIndex].$error.pattern && field.attrs.input_validation.value !== 'custom'">
+            <span class="text-danger" data-translate>The specified input is not valid:</span>
+            <span data-ng-switch="field.attrs.input_validation.value">
+              <span data-ng-switch-when="email" data-translate>please enter a valid email address.</span>
+              <span data-ng-switch-when="number" class="text-danger" data-translate>please enter numbers only.</span>
+              <span data-ng-switch-when="phonenumber" class="text-danger" data-translate>please enter numbers only.</span>
+            </span>
+          </div>
+          <div data-ng-if="entry['value'].length && maxlength >= 0 && (maxlength - entry['value'].length) <= 50" class="float-right">{{entry['value'].length}}/{{maxlength}}</div>
+          <div data-ng-if="field.required_status" class="float-left" data-ng-class="{'red-text': displayErrors()}">
+          </div>
+          <span data-ng-show="f['input-' + entryIndex].$error.required" data-ng-class="{'text-danger': (f['input-' + entryIndex].$dirty || displayErrors())}" data-translate>This field is mandatory.</span>
+          <span data-ng-show="f['input-' + entryIndex].$error.minlength" data-ng-class="{'text-danger': (f['input-' + entryIndex].$dirty || displayErrors())}" data-translate>The answer is too short.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div data-ng-if="field.required_status" class="float-left" data-ng-class="{'red-text': displayErrors()}">
+    <span data-ng-if="field.type !== 'inputbox' && field.type !== 'textarea'" data-translate>This field is mandatory.</span>
+  </div>
+</div>
